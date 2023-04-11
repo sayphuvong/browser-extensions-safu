@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<link>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Tab by Safu</title>
+<script src="../scripts/tailwindcss-3.3.0.js"></script>
+<script src="../scripts/myNewTabScript.js" defer></script>
+<style type="text/tailwindcss">
+  @layer components {
+      #bg-root-element {
+        @apply bg-no-repeat bg-cover;
+      }
+      .bg-loading {
+        @apply bg-no-repeat !bg-center !bg-[length:64px_64px] bg-[url(../images/gear-loading.gif)] w-[100vw] h-[100vh];
+      }
+      .btn-setting {
+        @apply w-[24px] h-[24px] bg-[url(../images/icon-setting.png)] bg-cover fixed top-2 right-2 hover:opacity-60;
+      }
+      .panel-setting {
+        @apply w-[320px] h-[200px] bg-red-400 fixed top-0 right-0 rounded-md p-2;
+      }
+      .panel-item {
+        @apply w-[200px] flex flex-col justify-center items-center border border-black rounded-md p-2 cursor-pointer;
+      }
+      .panel-item-title {
+        @apply font-bold;
+      }
+      .bg-browse-input {
+        @apply hidden;
+      }
+    }
+  </style>
+</head>
+
+<body id="bg-root-element" class="bg-loading">
+  <button id="btn-setting-open" class="btn-setting"></button>
+  <section id="panel-setting" class="hidden panel-setting flex justify-center items-center">
+    <button id="btn-setting-close" class="btn-setting"></button>
+    <div class="panel-setting-body">
+      <label class="panel-item">
+        <p class="panel-item-title">Browse background</p>
+        <img src="../images/file-search.png" alt="file search" />
+        <input type="file" class="bg-browse-input" accept="image/*" />
+      </label>
+    </div>
+  </section>
+</body>
+
+</html>

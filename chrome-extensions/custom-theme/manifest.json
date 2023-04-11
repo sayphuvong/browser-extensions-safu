@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "Safu Custom Theme",
+  "version": "0.0.1",
+  "description": "Safu will change theme color, background, and chrome's appearance, ...",
+  "chrome_url_overrides": {
+    "newtab": "templates/myNewTab.html"
+  }
+}
