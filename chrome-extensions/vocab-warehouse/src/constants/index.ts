@@ -1,0 +1,1 @@
+export const WAREHOUSE_NAME = "VOCAB_WAREHOUSE";

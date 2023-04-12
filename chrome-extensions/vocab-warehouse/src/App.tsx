@@ -4,8 +4,7 @@ import { InlineRichText } from "./components/InlineRichText";
 import moment from "moment";
 import { FaRegMehRollingEyes } from "react-icons/fa";
 import { useEffect } from "react";
-
-const WAREHOUSE_NAME = "VOCAB_WAREHOUSE";
+import { WAREHOUSE_NAME } from "./constants";
 
 interface VocabDataForm {
   word: string;

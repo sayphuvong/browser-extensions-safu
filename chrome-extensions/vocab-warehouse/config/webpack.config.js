@@ -200,7 +200,10 @@ module.exports = function (webpackEnv) {
       : isEnvDevelopment && 'cheap-module-source-map',
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
-    entry: paths.appIndexJs,
+    entry: {
+      index: paths.appIndexJs,
+      option: paths.appOptionJs,
+    },
     output: {
       // The build folder.
       path: paths.appBuild,
@@ -210,7 +213,7 @@ module.exports = function (webpackEnv) {
       // In development, it does not produce real files.
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
+        : isEnvDevelopment && 'static/js/[name].bundle.js',
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].chunk.js'
@@ -569,7 +572,37 @@ module.exports = function (webpackEnv) {
           {},
           {
             inject: true,
+            chunks: ['index'],
             template: paths.appHtml,
+            filename: 'index.html'
+          },
+          isEnvProduction
+            ? {
+                minify: {
+                  removeComments: true,
+                  collapseWhitespace: true,
+                  removeRedundantAttributes: true,
+                  useShortDoctype: true,
+                  removeEmptyAttributes: true,
+                  removeStyleLinkTypeAttributes: true,
+                  keepClosingSlash: true,
+                  minifyJS: true,
+                  minifyCSS: true,
+                  minifyURLs: true,
+                },
+              }
+            : undefined
+        )
+      ),
+      // Generates an `option.html` file with the <script> injected.
+      new HtmlWebpackPlugin(
+        Object.assign(
+          {},
+          {
+            inject: true,
+            chunks: ['option'],
+            template: paths.appOptionHtml,
+            filename: 'option.html'
           },
           isEnvProduction
             ? {
@@ -642,9 +675,13 @@ module.exports = function (webpackEnv) {
             manifest[file.name] = file.path;
             return manifest;
           }, seed);
-          const entrypointFiles = entrypoints.main.filter(
-            fileName => !fileName.endsWith('.map')
-          );
+
+          let entrypointFiles = [];
+          for (let [entryFile, fileName] of Object.entries(entrypoints)) {
+            let notMapFiles = fileName.filter((fileName) => !fileName.endsWith(".map"));
+            entrypointFiles = entrypointFiles.concat(notMapFiles);
+          }
+          
 
           return {
             files: manifestFiles,
