@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* POPUP WRAPPER */
+@layer components {
+  .popup-wrapper {
+    @apply w-[400px] min-h-[300px] p-4;
+  }
+}
+
+/* FORM */
+@layer components {
+  .app-input {
+    @apply appearance-none block w-full border rounded py-3 px-4 mb-3 leading-tight focus:outline-none bg-white border-gray-500;
+  }
+  .app-label {
+    @apply block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2;
+  }
+  .app-helptext-error {
+    @apply text-red-500 text-xs italic;
+  }
+  .app_input-error {
+    @apply border-red-500;
+  }
+}
+
+/* BUTTON */
+@layer components {
+  .btn {
+    @apply font-bold py-2 px-4 rounded cursor-pointer;
+  }
+  .btn-blue {
+    @apply bg-blue-500 text-white;
+  }
+  .btn-blue:hover {
+    @apply bg-blue-700;
+  }
+}
