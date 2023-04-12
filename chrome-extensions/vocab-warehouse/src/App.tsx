@@ -3,24 +3,9 @@ import { ArrayInput } from "./components/ArrayInput";
 import { InlineRichText } from "./components/InlineRichText";
 import moment from "moment";
 import { FaRegMehRollingEyes } from "react-icons/fa";
-import { useEffect } from "react";
-import { WAREHOUSE_NAME } from "./constants";
-
-interface VocabDataForm {
-  word: string;
-  definition: string;
-  attribute: string;
-  examples: string[];
-}
-
-interface VocabPayload {
-  createdAt: string;
-  updatedAt: string;
-  word: string;
-  attribute: string;
-  definition: string;
-  examples: string[];
-}
+import { MESSAGE_KEYS, WAREHOUSE_NAME } from "./constants";
+import { checkIsChromeRuntime } from "./utils";
+import type { VocabDataForm, VocabPayload } from "./types";
 
 function App() {
   const { register, handleSubmit, setValue, reset, getValues } =
@@ -50,7 +35,7 @@ function App() {
     localStorage.setItem(WAREHOUSE_NAME, JSON.stringify(prevVocabularies));
   };
 
-  const onSubmit = (data: VocabDataForm) => {
+  const onSubmit = async (data: VocabDataForm) => {
     const createdAt = moment().toISOString();
     saveVocabIntoStorage({
       createdAt,
@@ -61,33 +46,29 @@ function App() {
       examples: data.examples,
     });
     reset();
+
+    const response = await chrome.runtime.sendMessage({
+      message: { key: MESSAGE_KEYS.refreshOptionPage, data: null },
+    });
+    // do something with response here, not outside the function
+    console.log("response", response);
+  };
+
+  const redirectToOptionPage = () => {
+    if (!checkIsChromeRuntime()) {
+      window.open("/option");
+    } else if (typeof chrome.runtime.openOptionsPage === "function") {
+      chrome.runtime.openOptionsPage();
+    } else {
+      window.open(chrome.runtime.getURL("options.html"));
+    }
   };
 
   return (
     <section className="extension-popup popup-wrapper relative">
       <FaRegMehRollingEyes
         className="w-[32px] h-[32px] text-red-500 cursor-pointer hover:opacity-50 active:opacity-70 absolute top-6 right-4"
-        onClick={() => {
-          let data = null;
-          try {
-            const dataFromStorage = localStorage.getItem(WAREHOUSE_NAME);
-            if (!dataFromStorage) {
-              console.log("WAREHOUSE_NAME => Empty!");
-              alert("WAREHOUSE_NAME => Empty!");
-              return;
-            }
-            data = JSON.parse(dataFromStorage);
-          } catch (error) {
-            console.log(
-              `[Error] There is error when parse WAREHOUSE_NAME data!`
-            );
-            alert(`[Error] There is error when parse WAREHOUSE_NAME data!`);
-            return;
-          }
-
-          console.log("WAREHOUSE_NAME:", JSON.stringify(data, undefined, 2));
-          alert(JSON.stringify(data, undefined, 2));
-        }}
+        onClick={redirectToOptionPage}
       />
       <p className="uppercase font-bold text-xl text-center mb-8 mx-auto w-[80%] text-[#E86A33]">
         Add your vocab into warehouse
@@ -134,7 +115,7 @@ function App() {
         </label>
         <ArrayInput prefixName="examples">
           {({ name, prefixName, index }) => {
-            console.log('@@@ getValues()', getValues());
+            console.log("@@@ getValues()", getValues());
             return (
               <InlineRichText
                 value={getValues().examples?.[index] || ""}
