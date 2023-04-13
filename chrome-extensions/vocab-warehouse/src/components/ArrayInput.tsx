@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { EventHandler, MouseEventHandler, useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 
 interface ArrayInputProps {
@@ -11,27 +11,37 @@ interface ArrayInputProps {
 }
 
 export function ArrayInput({ children, prefixName }: ArrayInputProps) {
-  const [inputCount, setInputCount] = useState(1);
+  const [inputList, setInputList] = useState([
+    children({
+      name: `${prefixName}.${0}`,
+      index: 0,
+      prefixName,
+    })
+  ]);
+
+  const handleAddInput: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    setInputList(prev => [
+      ...prev,
+      children({
+        name: `${prefixName}.${prev.length}`,
+        index: prev.length,
+        prefixName,
+      })
+    ]);
+  };
 
   return (
     <>
       <div className="w-full space-y-2">
-        {[...Array(inputCount)].map((item, index) => (
-          <React.Fragment key={index}>
-            {children({
-              name: `${prefixName}.${index}`,
-              index,
-              prefixName,
-            })}
-          </React.Fragment>
-        ))}
+        {inputList}
       </div>
 
       <button
-        className="w-full border border-gray-300 flex justify-center rounded-[4px] mt-1 mb-4 p-1"
-        onClick={() => setInputCount((prev) => prev + 1)}
+        className="w-full border border-gray-300 flex justify-center rounded-[4px] mt-1 mb-4 p-1 bg-slate-300"
+        onClick={handleAddInput}
       >
-        <AiOutlinePlus className="text-[24px] text-gray-400" />
+        <AiOutlinePlus className="text-[16px] text-black" />
       </button>
     </>
   );

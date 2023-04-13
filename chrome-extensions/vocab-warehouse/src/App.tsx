@@ -2,13 +2,13 @@ import { useForm } from "react-hook-form";
 import { ArrayInput } from "./components/ArrayInput";
 import { InlineRichText } from "./components/InlineRichText";
 import moment from "moment";
-import { FaRegMehRollingEyes } from "react-icons/fa";
+import { AiFillSetting } from "react-icons/ai";
 import { MESSAGE_KEYS, WAREHOUSE_NAME } from "./constants";
 import { checkIsChromeRuntime } from "./utils";
 import type { VocabDataForm, VocabPayload } from "./types";
 
 function App() {
-  const { register, handleSubmit, setValue, reset, getValues } =
+  const { register, handleSubmit, setValue, reset, resetField ,getValues } =
     useForm<VocabDataForm>();
 
   const getVocabFromStorage = () => {
@@ -46,12 +46,11 @@ function App() {
       examples: data.examples,
     });
     reset();
+    resetField('examples');
 
-    const response = await chrome.runtime.sendMessage({
+    await chrome.runtime.sendMessage({
       message: { key: MESSAGE_KEYS.refreshOptionPage, data: null },
     });
-    // do something with response here, not outside the function
-    console.log("response", response);
   };
 
   const redirectToOptionPage = () => {
@@ -66,8 +65,8 @@ function App() {
 
   return (
     <section className="extension-popup popup-wrapper relative">
-      <FaRegMehRollingEyes
-        className="w-[32px] h-[32px] text-red-500 cursor-pointer hover:opacity-50 active:opacity-70 absolute top-6 right-4"
+      <AiFillSetting
+        className="w-[32px] h-[32px] text-red-500 cursor-pointer opacity-80 hover:opacity-100 active:opacity-70 absolute top-4 right-4"
         onClick={redirectToOptionPage}
       />
       <p className="uppercase font-bold text-xl text-center mb-8 mx-auto w-[80%] text-[#E86A33]">
@@ -75,7 +74,7 @@ function App() {
       </p>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col justify-center items-center"
+        className="flex flex-col justify-center"
       >
         <label className="app-label" htmlFor="word">
           Word
@@ -86,17 +85,6 @@ function App() {
           type="text"
           placeholder="word"
           {...register("word")}
-        />
-
-        <label className="app-label" htmlFor="definition">
-          Definition
-        </label>
-        <input
-          className="app-input"
-          id="definition"
-          type="text"
-          placeholder="definition"
-          {...register("definition")}
         />
 
         <label className="app-label" htmlFor="attribute">
@@ -110,6 +98,17 @@ function App() {
           {...register("attribute")}
         />
 
+        <label className="app-label" htmlFor="definition">
+          Definition
+        </label>
+        <input
+          className="app-input"
+          id="definition"
+          type="text"
+          placeholder="definition"
+          {...register("definition")}
+        />
+
         <label className="app-label" htmlFor="example">
           Example
         </label>
@@ -118,18 +117,20 @@ function App() {
             console.log("@@@ getValues()", getValues());
             return (
               <InlineRichText
-                value={getValues().examples?.[index] || ""}
+                key={`${prefixName} ${index + 1}`}
+                name={`examples.${index}`}
+                getValue={() => getValues().examples?.[index] || ""}
                 placeholder={`${prefixName} ${index + 1}`}
                 onMount={() => register(name as any)}
                 onChange={(value) => {
-                  setValue(name as any, value);
+                  setValue(`examples.${index}` as any, value);
                 }}
               />
             );
           }}
         </ArrayInput>
 
-        <input type="submit" className="btn btn-blue" />
+        <input type="submit" className="btn" />
       </form>
     </section>
   );

@@ -12,24 +12,31 @@ const RichTextEditorStyled = styled(RichTextEditor)`
   }
   & .public-DraftStyleDefault-block {
     font-family: arial;
-    height: 22px;
+    height: 20px;
     display: flex;
     align-items: center;
   }
   & .public-DraftEditor-content {
     padding: 12px 16px;
   }
+  & .public-DraftEditorPlaceholder-root {
+    padding: 12px 16px;
+    font-family: arial;
+    font-size: 1rem;
+  }
 `;
 
 interface InlineRichTextProps {
-  value: string;
+  name: string;
   placeholder: string;
   onMount: () => void;
   onChange: (value: string) => void;
+  getValue: () => string;
 }
 
 export function InlineRichText(props: InlineRichTextProps) {
-  const { value, placeholder, onMount, onChange } = props;
+  const { name, getValue, placeholder, onMount, onChange } = props;
+  const value = getValue();
 
   const [emptyToolbar] = useState({
     display: [],
